@@ -1,0 +1,18 @@
+# Supervise the stack with systemd (user or system unit).
+# Install: cp n8n-stack.service ~/.config/systemd/user/ && edit WorkingDirectory
+#   systemctl --user daemon-reload && systemctl --user enable --now n8n-stack
+[Unit]
+Description=n8n + PostgreSQL (podman-compose)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=%h/do-n8n-template/podman
+ExecStart=/usr/bin/podman-compose up -d
+ExecStop=/usr/bin/podman-compose down
+TimeoutStartSec=300
+
+[Install]
+WantedBy=default.target
