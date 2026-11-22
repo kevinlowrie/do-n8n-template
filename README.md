@@ -204,3 +204,15 @@ n8n is a **fair-code licensed workflow automation tool** - an open-source altern
 ---
 
 **Ready to automate?** Choose your tier above and start building workflows! 🚀
+
+## Branch & hook policy
+
+This repository follows the [harmonized branch, hook & release policy](docs/dev-branch-policy.md).
+Local hooks run `scripts/hook_policy.py` — **FAST** profile on WIP/PR branches
+(fast commit/push loop), **FULL** profile on protected branches (`main`,
+`testing`, `freeze`, `release-candidate`, `release`, `prod`).
+
+```sh
+pre-commit install            # or: make hooks-install
+python3 scripts/hook_policy.py status
+```
