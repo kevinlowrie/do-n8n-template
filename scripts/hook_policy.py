@@ -26,7 +26,19 @@ ROOT = Path(__file__).resolve().parents[1]
 # Per-repo full-gate command for protected branches.
 # None = auto-detect (HOMELAB_FULL_GATE_CMD env, workstation acceptance,
 #        make check, tests/ discovery, git status fallback).
-FULL_GATE_CMD: tuple[str, ...] | None = None
+# Mirrors .github/workflows/policy-ci.yml: validate all JSON files and
+# syntax-check all shell scripts (node_modules excluded).
+FULL_GATE_CMD: tuple[str, ...] | None = (
+    "bash",
+    "-c",
+    "set -euo pipefail; "
+    "find . -path ./node_modules -prune -o -name '*.json' -print0 | "
+    "while IFS= read -r -d '' f; do "
+    "python3 -c 'import json, sys; json.load(open(sys.argv[1]))' \"$f\"; "
+    "echo \"ok: $f\"; done; "
+    "find . -path ./node_modules -prune -o -name '*.sh' -print0 | "
+    "while IFS= read -r -d '' f; do bash -n \"$f\"; echo \"ok: $f\"; done",
+)
 
 PROTECTED_EXACT = {
     "main",
