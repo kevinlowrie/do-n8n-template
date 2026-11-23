@@ -1,0 +1,29 @@
+name: policy-ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  policy-ci:
+    name: policy-ci
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate JSON files
+        run: |
+          set -euo pipefail
+          find . -path ./node_modules -prune -o -name '*.json' -print0 |
+            while IFS= read -r -d '' f; do
+              python3 -c 'import json, sys; json.load(open(sys.argv[1]))' "$f"
+              echo "ok: $f"
+            done
+      - name: Syntax-check shell scripts
+        run: |
+          set -euo pipefail
+          find . -path ./node_modules -prune -o -name '*.sh' -print0 |
+            while IFS= read -r -d '' f; do
+              bash -n "$f"
+              echo "ok: $f"
+            done
